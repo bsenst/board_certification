@@ -10,28 +10,47 @@ def download_dataset(dataset_path, destination_path):
     except Exception as e:
         st.error(f"Failed to download the dataset: {e}")
 
-st.title("Private Kaggle Dataset Access")
+st.subheader("Medical Board Certification Questions")
 
-# Set Kaggle credentials for this session
-os.environ["KAGGLE_USERNAME"] = st.secrets["KAGGLE_USERNAME"]
-os.environ["KAGGLE_KEY"] = st.secrets["KAGGLE_KEY"]
+if not os.path.exists("data"):
 
-# Specify your dataset path and destination
-dataset_path = "bnzn261029/medilearn-qembed"
-destination_path = "data"
+    # Set Kaggle credentials for this session
+    os.environ["KAGGLE_USERNAME"] = st.secrets["KAGGLE_USERNAME"]
+    os.environ["KAGGLE_KEY"] = st.secrets["KAGGLE_KEY"]
 
-dataset_downloaded = 0
+    # Specify your dataset path and destination
+    dataset_path1 = st.secrets["dataset1"]
+    dataset_path2 = st.secrets["dataset2"]
+    destination_path = "data"
 
-if st.button("Download Dataset"):
     # Download the dataset using the Kaggle API
-    data =download_dataset(dataset_path, destination_path)
+    download_dataset(dataset_path1, destination_path)
+    download_dataset(dataset_path2, destination_path)
 
     st.success("Dataset downloaded successfully.")
-    
-    dataset_downloaded = 1
 
-if dataset_downloaded:
+columns_to_read = ['doc_id', 'questions', 'cluster']
+questions = pd.read_csv(st.secrets["file1"], usecols=columns_to_read)
+questions = questions.drop_duplicates()
 
-    data = pd.read_csv("data/medilearn_qembed.csv")
+columns_to_read = ['Fachdisziplin']
+pruefungsprotokolle = pd.read_csv(st.secrets["file2"], usecols=columns_to_read)
 
-    data
+fachdisziplin_options = pruefungsprotokolle.Fachdisziplin.unique()
+fachdisziplin = st.selectbox("Choose Fachdisziplin:", fachdisziplin_options)
+cluster = st.slider("Cluster", questions.cluster.min(), questions.cluster.max(), value=183)
+
+doc_ids = pruefungsprotokolle[pruefungsprotokolle.Fachdisziplin==fachdisziplin].index
+
+output = questions[questions.cluster==cluster]
+output = output[output.doc_id.isin(doc_ids)]
+
+st.write("Number of questions:", len(output))
+
+output = list(output.questions)
+
+if len(output)>10:
+    output = output[:5]
+
+for i, question in enumerate(output):
+    st.write(i+1, question)
