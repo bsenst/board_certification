@@ -19,8 +19,8 @@ if not os.path.exists("data"):
     os.environ["KAGGLE_KEY"] = st.secrets["KAGGLE_KEY"]
 
     # Specify your dataset path and destination
-    dataset_path1 = st.secrets["dataset1"]
-    dataset_path2 = st.secrets["dataset2"]
+    dataset_path1 = st.secrets["dataset_path1"]
+    dataset_path2 = st.secrets["dataset_path2"]
     destination_path = "data"
 
     # Download the dataset using the Kaggle API
