@@ -42,7 +42,7 @@ if 'user_info' not in st.session_state:
 ## -------------------------------------------------------------------------------------------------
 else:
 
-    st.title("Logged In")
+    st.title("Logged in")
 
     with st.sidebar:
         # Show user information
