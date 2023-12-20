@@ -1,3 +1,4 @@
-streamlit
+streamlit==1.23.1
+requests==2.31.0
 kaggle
 pandas

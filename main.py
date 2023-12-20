@@ -38,7 +38,7 @@ pruefungsprotokolle = pd.read_csv(st.secrets["file2"], usecols=columns_to_read)
 
 fachdisziplin_options = pruefungsprotokolle.Fachdisziplin.unique()
 fachdisziplin = st.selectbox("Choose Fachdisziplin:", fachdisziplin_options)
-cluster = st.slider("Cluster", questions.cluster.min(), questions.cluster.max(), value=183)
+cluster = st.slider("Cluster", int(questions.cluster.min()), int(questions.cluster.max()), value=183)
 
 doc_ids = pruefungsprotokolle[pruefungsprotokolle.Fachdisziplin==fachdisziplin].index
 
