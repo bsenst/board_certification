@@ -1,5 +1,7 @@
 import streamlit as st
+import pandas as pd
 import auth_functions
+import utils
 
 ## -------------------------------------------------------------------------------------------------
 ## Not logged in -----------------------------------------------------------------------------------
@@ -42,7 +44,7 @@ if 'user_info' not in st.session_state:
 ## -------------------------------------------------------------------------------------------------
 else:
 
-    st.title("Logged in")
+    st.title("Welcome")
 
     with st.sidebar:
         # Show user information
@@ -57,3 +59,25 @@ else:
         st.header('Delete account:')
         password = st.text_input(label='Confirm your password',type='password')
         st.button(label='Delete Account',on_click=auth_functions.delete_account,args=[password],type='primary')
+
+    # authorize the clientsheet 
+    client = utils.connect_gsheet()
+
+    # get the instance of the Spreadsheet
+    sheet = client.open('medilearn_qembed')
+
+    # get the first sheet of the Spreadsheet
+    sheet_instance = sheet.get_worksheet(0)
+    # get all the records of the data
+    df = sheet_instance.get_all_records()
+    df = pd.DataFrame.from_dict(df)
+    df = df[df.answers!=""]
+
+    # get the first sheet of the Spreadsheet
+    sheet_instance = sheet.get_worksheet(1)
+    # get all the records of the data
+    clusters = sheet_instance.get_all_records()
+    clusters = pd.DataFrame.from_dict(clusters)
+    cluster_dict = clusters["cluster_name"].to_dict()
+
+    st.multiselect(options=df.cluster.map(cluster_dict).values, label="Choose a topic")

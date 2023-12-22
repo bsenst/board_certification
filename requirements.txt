@@ -2,3 +2,6 @@ streamlit==1.23.1
 requests==2.31.0
 kaggle
 pandas
+gspread
+google-api-python-client
+oauth2client
