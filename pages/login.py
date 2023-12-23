@@ -80,4 +80,13 @@ else:
     clusters = pd.DataFrame.from_dict(clusters)
     cluster_dict = clusters["cluster_name"].to_dict()
 
-    st.multiselect(options=df.cluster.map(cluster_dict).values, label="Choose a topic")
+    options = set(df.cluster.map(cluster_dict).values)
+    topic = st.selectbox(options=options, label="Choose a topic")
+
+    subset = df[df.cluster==clusters[clusters.cluster_name==topic].cluster_id.values[0]]
+
+    for i in range(len(subset)):
+        with st.expander(subset.iloc[i].questions):
+            st.write(subset.iloc[i].answers)
+            doc_id = subset.iloc[i].doc_id
+            st.caption(f'{doc_id}, {st.session_state["pruefungsprotokolle"].iloc[3].values[0]}')

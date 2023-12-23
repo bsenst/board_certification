@@ -34,16 +34,18 @@ questions = pd.read_csv(st.secrets["file1"], usecols=columns_to_read)
 questions = questions.drop_duplicates()
 
 columns_to_read = ['Fachdisziplin']
-pruefungsprotokolle = pd.read_csv(st.secrets["file2"], usecols=columns_to_read)
+st.session_state["pruefungsprotokolle"] = pd.read_csv(st.secrets["file2"], usecols=columns_to_read)
 
-fachdisziplin_options = pruefungsprotokolle.Fachdisziplin.unique()
+fachdisziplin_options = st.session_state["pruefungsprotokolle"].Fachdisziplin.unique()
 fachdisziplin = st.selectbox("Choose Fachdisziplin:", fachdisziplin_options)
 cluster = st.slider("Cluster", int(questions.cluster.min()), int(questions.cluster.max()), value=183)
 
-doc_ids = pruefungsprotokolle[pruefungsprotokolle.Fachdisziplin==fachdisziplin].index
+doc_ids = st.session_state["pruefungsprotokolle"][st.session_state["pruefungsprotokolle"].Fachdisziplin==fachdisziplin].index
 
 output = questions[questions.cluster==cluster]
 output = output[output.doc_id.isin(doc_ids)]
+
+st.write(st.session_state["pruefungsprotokolle"].iloc[1413])
 
 st.write("Number of questions:", len(output))
 
