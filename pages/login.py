@@ -81,6 +81,9 @@ else:
     cluster_dict = clusters["cluster_name"].to_dict()
 
     options = set(df.cluster.map(cluster_dict).values)
+    
+    st.write(f"questions: {len(df)}, topics: {len(options)})
+    
     topic = st.selectbox(options=options, label="Choose a topic")
 
     subset = df[df.cluster==clusters[clusters.cluster_name==topic].cluster_id.values[0]]
