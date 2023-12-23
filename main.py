@@ -45,8 +45,6 @@ doc_ids = st.session_state["pruefungsprotokolle"][st.session_state["pruefungspro
 output = questions[questions.cluster==cluster]
 output = output[output.doc_id.isin(doc_ids)]
 
-st.write(st.session_state["pruefungsprotokolle"].iloc[1413])
-
 st.write("Number of questions:", len(output))
 
 output = list(output.questions)
