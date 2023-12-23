@@ -82,7 +82,7 @@ else:
 
     options = set(df.cluster.map(cluster_dict).values)
     
-    st.write(f"questions: {len(df)}, topics: {len(options)})
+    st.write(f"questions: {len(df)}, topics: {len(options)}")
     
     topic = st.selectbox(options=options, label="Choose a topic")
 
