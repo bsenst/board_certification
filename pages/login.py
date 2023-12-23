@@ -89,4 +89,4 @@ else:
         with st.expander(subset.iloc[i].questions):
             st.write(subset.iloc[i].answers)
             doc_id = subset.iloc[i].doc_id
-            st.caption(f'{doc_id}, {st.session_state["pruefungsprotokolle"].iloc[3].values[0]}')
+            st.caption(f'{doc_id}, {st.session_state["pruefungsprotokolle"].iloc[i].values[0]}')
