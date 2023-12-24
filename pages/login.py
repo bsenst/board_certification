@@ -85,6 +85,8 @@ else:
 
     subset = df[df.cluster==clusters[clusters.cluster_name==topic].cluster_id.values[0]]
 
+    utils.load_data()
+
     for i in range(len(subset)):
         with st.expander(subset.iloc[i].questions):
             st.write(subset.iloc[i].answers)
