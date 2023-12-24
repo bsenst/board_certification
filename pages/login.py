@@ -81,6 +81,9 @@ else:
     cluster_dict = clusters["cluster_name"].to_dict()
 
     options = set(df.cluster.map(cluster_dict).values)
+    
+    st.write(f"questions: {len(df)}, topics: {len(options)}")
+    
     topic = st.selectbox(options=options, label="Choose a topic")
 
     subset = df[df.cluster==clusters[clusters.cluster_name==topic].cluster_id.values[0]]
@@ -91,4 +94,4 @@ else:
         with st.expander(subset.iloc[i].questions):
             st.write(subset.iloc[i].answers)
             doc_id = subset.iloc[i].doc_id
-            st.caption(f'{doc_id}, {st.session_state["pruefungsprotokolle"].iloc[3].values[0]}')
+            st.caption(f'{doc_id}, {st.session_state["pruefungsprotokolle"].iloc[i].values[0]}')
