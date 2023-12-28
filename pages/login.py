@@ -46,20 +46,6 @@ else:
 
     st.title("Welcome")
 
-    with st.sidebar:
-        # Show user information
-        st.header('User information:')
-        st.write(st.session_state.user_info["email"])
-
-        # Sign out
-        st.header('Sign out:')
-        st.button(label='Sign Out',on_click=auth_functions.sign_out,type='primary')
-
-        # Delete Account
-        st.header('Delete account:')
-        password = st.text_input(label='Confirm your password',type='password')
-        st.button(label='Delete Account',on_click=auth_functions.delete_account,args=[password],type='primary')
-
     utils.load_data()
 
     # authorize the clientsheet 
@@ -90,23 +76,74 @@ else:
     user_cell = sheet_instance.find(user_id)
     
     if not user_cell:
-        sheet_instance.append_row([user_id,"".join(["0" for _ in range(45000)])], table_range="A1:B1")
+        sheet_instance.append_row([user_id,"favourite:"], table_range="A1:B1")
         user_cell = sheet_instance.find(user_id)
-    
-    # sheet_instance.update_cell(user_cell.row, user_cell.col+1, ",")
+
+    with st.sidebar:
+        # Show user information
+        st.header('User information:')
+        st.write(st.session_state.user_info["email"])
+
+        memory = sheet_instance.cell(user_cell.row, user_cell.col+1).value[10:].split(",")
+        st.write(f'Questions to remember: {len(memory)-1}')
+
+        # Sign out
+        st.header('Sign out:')
+        st.button(label='Sign Out',on_click=auth_functions.sign_out,type='primary')
+
+        # Delete Account
+        st.header('Delete account:')
+        password = st.text_input(label='Confirm your password',type='password')
+        st.button(label='Delete Account',on_click=auth_functions.delete_account,args=[password],type='primary')
 
     options = set(df.cluster.map(cluster_dict).values)
     st.write(f"Questions total: {len(df)}, topics total: {len(options)}")
 
-    topic = st.selectbox(options=sorted(options), label="Choose a topic")
+    def remember(question_id):
+        memory = sheet_instance.cell(user_cell.row, user_cell.col+1).value
+        if question_id not in memory:
+            sheet_instance.update_cell(user_cell.row, user_cell.col+1, memory+str(question_id)+",")
+        
+    def remove(question_id):
+        memory = sheet_instance.cell(user_cell.row, user_cell.col+1).value
+        memory = memory.replace(question_id+",", "")
+        sheet_instance.update_cell(user_cell.row, user_cell.col+1, memory)
+        
+    tab1, tab2 = st.tabs(["Questions", "Remembered"])
 
-    subset = df[df.cluster==clusters[clusters.cluster_name==topic].cluster_id.values[0]]
+    with tab1:
+        topic = st.selectbox(options=sorted(options), label="Choose a topic")
+        subset = df[df.cluster==clusters[clusters.cluster_name==topic].cluster_id.values[0]]
 
-    st.write(f"Questions selected: {len(subset)}")
+        st.write(f"Questions selected: {len(subset)}")
 
-    for i in range(len(subset)):
-        with st.expander(subset.iloc[i].questions):
-            st.write(subset.iloc[i].answers)
-            doc_id = subset.iloc[i].doc_id
-            question_id = subset.iloc[i][0]
-            st.caption(f'doc_id {doc_id}, question_id {question_id}') # add fachdisziplin {st.session_state["pruefungsprotokolle"].iloc[i].values[0]}
+        for i in range(len(subset)):
+            with st.expander(subset.iloc[i].questions):
+                st.write(subset.iloc[i].answers)
+                doc_id = subset.iloc[i].doc_id
+                question_id = subset.iloc[i][0]
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.caption(f'doc_id {doc_id}, question_id {question_id}') # add fachdisziplin {st.session_state["pruefungsprotokolle"].iloc[i].values[0]}
+                with col2:
+                    if st.button('remember', key=f"{question_id}-remember"):
+                        remember("q"+str(question_id))
+
+    with tab2:
+        
+        for i in range(len(memory)-1):
+            el = df[df[""]==int(memory[i][1:])]
+
+            question = el.questions.values[0]
+            question_id = el[""].values[0]
+            doc_id = el.doc_id.values[0]
+            answer = el.answers.values[0]
+
+            with st.expander(str(question)):
+                st.write(answer)
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.caption(f'doc_id {doc_id}, question_id {question_id}') # add fachdisziplin {st.session_state["pruefungsprotokolle"].iloc[i].values[0]}
+                with col2:
+                    if st.button('remove', key=f"{question_id}-remove"):
+                        remove("q"+str(question_id))
