@@ -77,11 +77,24 @@ else:
 
     # get the first sheet of the Spreadsheet
     sheet_instance = sheet.get_worksheet(1)
+
     # get all the records of the data
     clusters = sheet_instance.get_all_records()
     clusters = pd.DataFrame.from_dict(clusters)
     cluster_dict = clusters["cluster_name"].to_dict()
+
+    sheet = client.open('board-questions-user')
+    sheet_instance = sheet.get_worksheet(0)
+    user_id = st.session_state.user_info["localId"]
     
+    user_cell = sheet_instance.find(user_id)
+    
+    if not user_cell:
+        sheet_instance.append_row([user_id,"".join(["0" for _ in range(45000)])], table_range="A1:B1")
+        user_cell = sheet_instance.find(user_id)
+    
+    # sheet_instance.update_cell(user_cell.row, user_cell.col+1, ",")
+
     options = set(df.cluster.map(cluster_dict).values)
     st.write(f"Questions total: {len(df)}, topics total: {len(options)}")
 
@@ -95,4 +108,5 @@ else:
         with st.expander(subset.iloc[i].questions):
             st.write(subset.iloc[i].answers)
             doc_id = subset.iloc[i].doc_id
-            st.caption(f'{doc_id}') # add fachdisziplin {st.session_state["pruefungsprotokolle"].iloc[i].values[0]}
+            question_id = subset.iloc[i][0]
+            st.caption(f'doc_id {doc_id}, question_id {question_id}') # add fachdisziplin {st.session_state["pruefungsprotokolle"].iloc[i].values[0]}
