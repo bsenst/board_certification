@@ -60,6 +60,8 @@ else:
         password = st.text_input(label='Confirm your password',type='password')
         st.button(label='Delete Account',on_click=auth_functions.delete_account,args=[password],type='primary')
 
+    utils.load_data()
+
     # authorize the clientsheet 
     client = utils.connect_gsheet()
 
@@ -79,15 +81,15 @@ else:
     clusters = sheet_instance.get_all_records()
     clusters = pd.DataFrame.from_dict(clusters)
     cluster_dict = clusters["cluster_name"].to_dict()
-
+    
     options = set(df.cluster.map(cluster_dict).values)
-    topic = st.selectbox(options=options, label="Choose a topic")
+    st.write(f"Questions total: {len(df)}, topics total: {len(options)}")
+
+    topic = st.selectbox(options=sorted(options), label="Choose a topic")
 
     subset = df[df.cluster==clusters[clusters.cluster_name==topic].cluster_id.values[0]]
-    st.write(f"Questions total: {len(df)}, topics total: {len(options)}")
-    st.write(f"Questions selected: {len(subset)}")
 
-    utils.load_data()
+    st.write(f"Questions selected: {len(subset)}")
 
     for i in range(len(subset)):
         with st.expander(subset.iloc[i].questions):
