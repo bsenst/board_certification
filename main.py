@@ -6,6 +6,8 @@ import utils
 
 st.subheader("Medical Board Certification Questions")
 
+st.warning("The questions and answers displayed are for learning purposes only.")
+
 utils.load_data()
 
 fachdisziplin_options = sorted(st.session_state["pruefungsprotokolle"].Fachdisziplin.dropna().unique())
