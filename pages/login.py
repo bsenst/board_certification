@@ -44,7 +44,9 @@ if 'user_info' not in st.session_state:
 ## -------------------------------------------------------------------------------------------------
 else:
 
-    st.title("Welcome")
+    st.subheader("Welcome")
+
+    st.warning("The questions and answers displayed are for learning purposes only.")
 
     utils.load_data()
 
